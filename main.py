@@ -1,6 +1,5 @@
 """
     Projeto Criado Por: Arthur Strelow - TADS MODULO I (IFPI) - 04/2022
-    "Podem Copiar o que eu faço, mas não podem copiar o que sei fazer"
 """
 import os
 from selenium import webdriver
@@ -42,18 +41,19 @@ senha = getpass('Digite sua senha => ')
 
 
 class Instabot:
-    def __init__(self, username, pw):
-        self.username = usuario
+    def __init__(self, username, Senha):
+        self.usuario = username
+        self.pwd = Senha
         self.driver = webdriver.Chrome(f"{os.path.dirname(os.path.abspath(__file__))}/chromedriver")
         self.driver.get('https://www.instagram.com')
         titulo('Abrindo o Instagram e Logando...')
         sleep(3)
         # Insere o nome de usuário
         self.driver.find_element_by_xpath('//input[@name=\"username\"]') \
-            .send_keys(username)
+            .send_keys(self.usuario)
         # Insere a senha
         self.driver.find_element_by_xpath('//input[@name=\"password\"]') \
-            .send_keys(senha)
+            .send_keys(self.pwd)
         # Clicar no botão de login
         self.driver.find_element_by_xpath('//button[@type="submit"]') \
             .click()
@@ -67,7 +67,7 @@ class Instabot:
         sleep(2)
 
     def get_unfollowers(self):
-        self.driver.find_element_by_xpath("//a[contains(@href, '/{}/')]".format(self.username)) \
+        self.driver.find_element_by_xpath("//a[contains(@href, '/{}/')]".format(self.usuario)) \
             .click()
         sleep(3)
         titulo('Comparando "Seguindo" e "Seguidores"...')
@@ -86,8 +86,11 @@ class Instabot:
                 print("Houve um problema na hora de abrir o arquivo")
             else:
                 try:
-                    a.write(f'{uuu}\n')
                     cont += 1
+                    if cont == len(not_following_back):
+                        a.write(f'{uuu}')
+                    else:
+                        a.write(f'{uuu}\n')
                 except:
                     print('Problema na hora de escrever os nomes')
                 else:
@@ -98,9 +101,9 @@ class Instabot:
     def _get_names(self, following=True):
         sleep(3)
         if following:
-            scroll_box = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[3]")
+            scroll_box = self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]")
         else:
-            scroll_box = self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[2]")
+            scroll_box = self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]")
 
         last_ht, ht = 0, 1
 
@@ -112,8 +115,8 @@ class Instabot:
                 return arguments[0].scrollHeight
             """, scroll_box)
         links = scroll_box.find_elements_by_tag_name('a')
-        names = [name.text for name in links if name != '']
-        self.driver.find_element_by_xpath("/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[1]/div/div[3]/div/button") \
+        names = [name.text.replace('Verificado', '').strip() for name in links if name != '']
+        self.driver.find_element_by_xpath("/html/body/div[2]/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[1]/div/div[3]/div/button") \
             .click()
         return names
 
@@ -125,11 +128,11 @@ class Instabot:
             self.driver.get(f'https://www.instagram.com/{linha}/')
             sleep(2)
             try:
-                self.driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div/header/section/div[1]/div[1]/div/div[2]/button').click()
+                self.driver.find_element_by_xpath('/html/body/div[2]/div/div/div[1]/div/div/div/div[1]/div[1]/div[2]/section/main/div/header/section/div[1]/div[2]/div/div[1]/button').click()
             except:
-                self.driver.find_element_by_xpath('/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/main/div/header/section/div[1]/div[2]/div/div[2]/button').click()
+                self.driver.find_element_by_xpath('/html/body/div[2]/div/div/div[1]/div/div/div/div[1]/div[1]/div[2]/section/main/div/header/section/div[1]/div[1]/div/div[1]/button').click()
             sleep(.5)
-            self.driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div/div/div/div[3]/button[1]').click()
+            self.driver.find_element_by_xpath('/html/body/div[2]/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div/div[7]').click()
             print(f'Você parou de seguir => {linha}')
         arq.close()
 
